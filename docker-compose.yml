@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  web:
+    image: myapache
+    container_name: web_docker
+    ports:
+      - "80:80"
+    volumes:
+      - "./web:/var/www/html"
+      - "./etc/httpd/conf/httpd.conf:/etc/httpd/conf/httpd.conf"
+      - "./etc/httpd/conf.d/httpd-vhosts.conf:/etc/httpd/conf.d/httpd-vhosts.conf"
+    command: /bin/sh -c "/usr/sbin/php-fpm -D && /usr/sbin/httpd -DFOREGROUND"
+    restart: always
