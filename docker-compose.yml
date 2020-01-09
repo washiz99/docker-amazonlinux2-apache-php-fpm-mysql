@@ -1,11 +1,27 @@
 version: "3"
 
 services:
+  reverse-proxy:
+    image: nginx:1.17.6
+    container_name: nginx_docker
+    volumes:
+      - "./etc/nginx/default.template.conf:/etc/nginx/conf.d/default.template"
+      - "./etc/ssl:/etc/ssl"                                                  
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NGINX_HOST=${NGINX_HOST}
+    command: /bin/sh -c "envsubst '$$NGINX_HOST' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    restart: always
+    depends_on:
+      - web
+
   web:
     image: myapache
     container_name: web_docker
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     volumes:
       - "./web:/var/www/html"
       - "./etc/httpd/conf/httpd.conf:/etc/httpd/conf/httpd.conf"
