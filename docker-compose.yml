@@ -29,3 +29,23 @@ services:
       - "./etc/httpd/conf.d/httpd-vhosts.conf:/etc/httpd/conf.d/httpd-vhosts.conf"
     command: /bin/sh -c "/usr/sbin/php-fpm -D && /usr/sbin/httpd -DFOREGROUND"
     restart: always
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7.26
+    container_name: ${MYSQL_HOST}                 
+    environment:                                  
+      - MYSQL_DATABASE=${MYSQL_DATABASE}          
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}                  
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}          
+    volumes:                                      
+      - "./db/data:/var/lib/mysql"          
+      - "./db/dump:/docker-entrypoint-initdb.d"
+      - "./etc/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf"
+    ports:
+      - "3306:3306"
+    expose:                                       
+      - "3306"                                    
+    restart: always                               
